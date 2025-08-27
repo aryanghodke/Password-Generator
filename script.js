@@ -13,23 +13,29 @@ const generateBtn = document.querySelector(".generateButton");
 const allCheckBox = document.querySelectorAll("input[type=checkbox]");
 const symbols = '~`!@#$%^&*()_-+={[}]|:;"<,>.?/';
 
+
+//initially
 let password = "";
-let passwordLength = 15;
+let passwordLength = 10;
 let checkCount = 0;
 handleSlider();
-//set strenght circle color to grey
+//ste strength circle color to grey
+setIndicator("#ccc");
 
-//set password length
-function handleSlider()
-{
+
+//set passwordLength
+function handleSlider() {
     inputSlider.value = passwordLength;
     lengthDisplay.innerText = passwordLength;
-
+    //or kuch bhi karna chahiye ? - HW
+    const min = inputSlider.min;
+    const max = inputSlider.max;
+    inputSlider.style.backgroundSize = ( (passwordLength - min)*100/(max - min)) + "% 100%"
 }
 
-function setIndicator(color){
-    indicator.computedStyleMap.backgroundColpr = color;
-    //shadow
+function setIndicator(color) {
+    indicator.style.backgroundColor = color;
+    indicator.style.boxShadow = `0px 0px 12px 1px ${color}`;
 }
 
 function getRndInteger(min, max) {
@@ -77,26 +83,28 @@ function calcStrength() {
 }
 
 async function copyContent() {
-    try{
+    try {
         await navigator.clipboard.writeText(passwordDisplay.value);
         copyMsg.innerText = "copied";
     }
-    catch (e){
-        copyMsg.innerText = "failed";
+    catch(e) {
+        copyMsg.innerText = "Failed";
     }
-    // to make copy span visible
+    //to make copy wala span visible
     copyMsg.classList.add("active");
 
-    setTimeout( ()=> {
+    setTimeout( () => {
         copyMsg.classList.remove("active");
-    }, 2000);
-}
+    },2000);
 
+}
 
 function shufflePassword(array) {
     //Fisher Yates Method
     for (let i = array.length - 1; i > 0; i--) {
+        //random J, find out using random function
         const j = Math.floor(Math.random() * (i + 1));
+        //swap number at i index and j index
         const temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -105,8 +113,6 @@ function shufflePassword(array) {
     array.forEach((el) => (str += el));
     return str;
 }
-
-
 
 function handleCheckBoxChange() {
     checkCount = 0;
@@ -124,54 +130,55 @@ function handleCheckBoxChange() {
 
 allCheckBox.forEach( (checkbox) => {
     checkbox.addEventListener('change', handleCheckBoxChange);
-}) 
+})
 
 
-inputSlider.addEventListener('input',(e)=> {
+inputSlider.addEventListener('input', (e) => {
     passwordLength = e.target.value;
     handleSlider();
 })
 
+
 copyBtn.addEventListener('click', () => {
-    if(passwordDisplay)
+    if(passwordDisplay.value)
         copyContent();
-    
 })
 
-generateBtn.addEventListener('click', () =>{
-    if(checkCount<=0) return;
+generateBtn.addEventListener('click', () => {
+    //none of the checkbox are selected
 
-    if(passwordLength < checkCount){
+    if(checkCount == 0) 
+        return;
+
+    if(passwordLength < checkCount) {
         passwordLength = checkCount;
         handleSlider();
     }
-        
 
-    //find new password
-
+    // let's start the jouney to find new password
+    console.log("Starting the Journey");
     //remove old password
-    password="";
+    password = "";
 
-    // lets put the stuff mentioned by checkboxes
+    //let's put the stuff mentioned by checkboxes
 
-    // if(uppercaseCheck.checked){
+    // if(uppercaseCheck.checked) {
     //     password += generateUpperCase();
     // }
-    
-    // if(lowercaseCheck.checked){
+
+    // if(lowercaseCheck.checked) {
     //     password += generateLowerCase();
     // }
 
-    // if(numbersCheck.checked){
+    // if(numbersCheck.checked) {
     //     password += generateRandomNumber();
     // }
 
-    // if(uppercaseCheck.checked){
+    // if(symbolsCheck.checked) {
     //     password += generateSymbol();
     // }
 
-
-     let funcArr = [];
+    let funcArr = [];
 
     if(uppercaseCheck.checked)
         funcArr.push(generateUpperCase);
@@ -189,7 +196,7 @@ generateBtn.addEventListener('click', () =>{
     for(let i=0; i<funcArr.length; i++) {
         password += funcArr[i]();
     }
-    console.log("Compulsory adddition done");
+    console.log("COmpulsory adddition done");
 
     //remaining adddition
     for(let i=0; i<passwordLength-funcArr.length; i++) {
@@ -206,9 +213,4 @@ generateBtn.addEventListener('click', () =>{
     console.log("UI adddition done");
     //calculate strength
     calcStrength();
-
-
-
-
-
-})
+});
